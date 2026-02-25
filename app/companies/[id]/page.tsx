@@ -4,7 +4,7 @@ import companies from "../../../data/companies.json"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 
-export default function CompanyProfile() {
+export default function CompanyProfile(){
 
   const params = useParams()
 
@@ -12,8 +12,8 @@ export default function CompanyProfile() {
     (c:any)=> c.id == params.id
   )
 
-  const [data, setData] = useState<any>(null)
-  const [loading, setLoading] = useState(false)
+  const [data,setData] = useState<any>(null)
+  const [loading,setLoading] = useState(false)
 
   async function enrich(){
 
@@ -34,34 +34,48 @@ export default function CompanyProfile() {
   }
 
   return(
-    <div style={{padding:"40px"}}>
+    <div style={{
+      padding:"40px",
+      maxWidth:"700px",
+      margin:"auto"
+    }}>
 
-      <h1 style={{fontSize:"30px"}}>
+      <h1 style={{
+        fontSize:"32px",
+        marginBottom:"10px"
+      }}>
         {company.name}
       </h1>
 
-      <p>
+      <p style={{color:"gray"}}>
         {company.description}
       </p>
 
       <button
         onClick={enrich}
+        disabled={loading}
         style={{
-          padding:"10px",
-          background:"white",
-          color:"black",
-          marginTop:"10px"
+          marginTop:"20px",
+          padding:"12px 20px",
+          borderRadius:"8px",
+          border:"none",
+          background:"#4CAF50",
+          color:"white",
+          cursor:"pointer"
         }}
       >
-        ENRICH
+        {loading ? "Enriching..." : "Enrich Company"}
       </button>
 
-      {loading && <p>Loading...</p>}
-
       {data && (
-        <div>
+        <div style={{
+          marginTop:"30px",
+          padding:"20px",
+          background:"#111",
+          borderRadius:"10px"
+        }}>
 
-          <h3>Summary:</h3>
+          <h3>AI Summary</h3>
 
           <p>{data.summary}</p>
 

@@ -13,38 +13,60 @@ export default function CompaniesPage() {
   )
 
   return (
-    <div style={{padding:"40px"}}>
+    <div style={{
+      padding:"40px",
+      maxWidth:"800px",
+      margin:"auto"
+    }}>
 
-      <h1 style={{fontSize:"30px", fontWeight:"bold"}}>
-        Companies
+      <h1 style={{
+        fontSize:"36px",
+        fontWeight:"bold",
+        marginBottom:"20px"
+      }}>
+        VC Scout
       </h1>
 
       <input
         type="text"
-        placeholder="Search company..."
+        placeholder="Search companies..."
         value={search}
         onChange={(e)=>setSearch(e.target.value)}
-        style={{padding:"10px", marginTop:"10px"}}
+        style={{
+          padding:"12px",
+          width:"100%",
+          borderRadius:"8px",
+          border:"1px solid gray",
+          marginBottom:"20px"
+        }}
       />
 
-      <div style={{marginTop:"20px"}}>
-
-        {filtered.map((company:any)=>(
-          <div key={company.id} style={{
-            border:"1px solid gray",
-            padding:"10px",
-            marginTop:"10px"
+      {filtered.map((company:any)=>(
+        <Link
+          key={company.id}
+          href={`/companies/${company.id}`}
+          style={{textDecoration:"none"}}
+        >
+          <div style={{
+            border:"1px solid #333",
+            padding:"20px",
+            borderRadius:"10px",
+            marginBottom:"15px",
+            cursor:"pointer",
+            background:"#111"
           }}>
-            <Link href={`/companies/${company.id}`}>
-              <h2>{company.name}</h2>
-            </Link>
 
-            <p>{company.industry}</p>
+            <h2 style={{fontSize:"22px"}}>
+              {company.name}
+            </h2>
+
+            <p style={{color:"gray"}}>
+              {company.industry}
+            </p>
 
           </div>
-        ))}
-
-      </div>
+        </Link>
+      ))}
 
     </div>
   )
