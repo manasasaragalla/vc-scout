@@ -10,7 +10,9 @@ export default function CompanyPage() {
 
   const company = companies.find((c: any) => c.id === id)
 
-  // 🔒 TypeScript safe check (THIS FIXES YOUR BUILD ERROR)
+  const [summary, setSummary] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
   if (!company) {
     return (
       <div className="min-h-screen bg-black text-white p-10">
@@ -18,9 +20,6 @@ export default function CompanyPage() {
       </div>
     )
   }
-
-  const [summary, setSummary] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
 
   async function enrichCompany() {
     setLoading(true)
@@ -31,7 +30,7 @@ export default function CompanyPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        website: company.website,
+        website: company?.website, // ✅ SAFE ACCESS
       }),
     })
 
