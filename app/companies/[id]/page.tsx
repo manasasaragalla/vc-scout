@@ -8,7 +8,8 @@ export default function CompanyPage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const company = companies.find((c: any) => c.id === id);
+  const company =
+    companies.find((c: any) => c.id === id) || null;
 
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
