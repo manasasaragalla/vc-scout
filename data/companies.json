@@ -2,22 +2,19 @@
   {
     "id": 1,
     "name": "Stripe",
-    "website": "https://stripe.com",
-    "industry": "Fintech",
-    "description": "Online payment processing platform"
+    "description": "Fintech payment infrastructure",
+    "website": "https://stripe.com"
   },
   {
     "id": 2,
     "name": "Notion",
-    "website": "https://notion.so",
-    "industry": "Productivity",
-    "description": "Workspace for notes and collaboration"
+    "description": "Productivity workspace platform",
+    "website": "https://notion.so"
   },
   {
     "id": 3,
     "name": "OpenAI",
-    "website": "https://openai.com",
-    "industry": "AI",
-    "description": "Artificial intelligence research company"
+    "description": "Artificial Intelligence research company",
+    "website": "https://openai.com"
   }
 ]
