@@ -1,87 +1,79 @@
 "use client"
 
-import companies from "../../../data/companies.json"
 import { useParams } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import companies from "@/data/companies.json"
 
-export default function CompanyProfile(){
+export default function CompanyProfile() {
+  const { id } = useParams()
+  const company = companies.find((c) => c.id === Number(id))
 
-  const params = useParams()
+  const [notes, setNotes] = useState("")
 
-  const company:any = companies.find(
-    (c:any)=> c.id == params.id
-  )
+  useEffect(() => {
+    if (id) {
+      const saved = localStorage.getItem(`notes-${id}`)
+      if (saved) {
+        setNotes(saved)
+      }
+    }
+  }, [id])
 
-  const [data,setData] = useState<any>(null)
-  const [loading,setLoading] = useState(false)
-
-  async function enrich(){
-
-    setLoading(true)
-
-    const res = await fetch("/api/enrich",{
-      method:"POST",
-      body: JSON.stringify({
-        website: company.website
-      })
-    })
-
-    const result = await res.json()
-
-    setData(result)
-
-    setLoading(false)
+  const saveNotes = () => {
+    localStorage.setItem(`notes-${id}`, notes)
+    alert("Notes saved")
   }
 
-  return(
-    <div style={{
-      padding:"40px",
-      maxWidth:"700px",
-      margin:"auto"
-    }}>
+  const saveToList = () => {
+  const existing = JSON.parse(localStorage.getItem("saved-companies") || "[]")
 
-      <h1 style={{
-        fontSize:"32px",
-        marginBottom:"10px"
-      }}>
-        {company.name}
-      </h1>
+  const alreadySaved = existing.find(
+    (item: any) => item.id === company.id
+  )
 
-      <p style={{color:"gray"}}>
-        {company.description}
-      </p>
+  if (alreadySaved) {
+    alert("Already saved to list")
+    return
+  }
 
-      <button
-        onClick={enrich}
-        disabled={loading}
-        style={{
-          marginTop:"20px",
-          padding:"12px 20px",
-          borderRadius:"8px",
-          border:"none",
-          background:"#4CAF50",
-          color:"white",
-          cursor:"pointer"
-        }}
-      >
-        {loading ? "Enriching..." : "Enrich Company"}
-      </button>
+  const updated = [...existing, company]
 
-      {data && (
-        <div style={{
-          marginTop:"30px",
-          padding:"20px",
-          background:"#111",
-          borderRadius:"10px"
-        }}>
+  localStorage.setItem("saved-companies", JSON.stringify(updated))
 
-          <h3>AI Summary</h3>
+  alert("Company saved to list")
+}
+  if (!company) {
+    return <div className="text-white">Company not found</div>
+  }
 
-          <p>{data.summary}</p>
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">{company.name}</h1>
+      <p className="text-gray-400">{company.description}</p>
 
-        </div>
-      )}
+      <div>
+        <h2 className="text-xl font-semibold mb-2">Notes</h2>
 
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Write notes about this company..."
+          className="w-full p-3 bg-zinc-800 rounded min-h-[120px]"
+        />
+
+        <button
+          onClick={saveNotes}
+          className="mt-3 bg-blue-600 px-4 py-2 rounded"
+        >
+          Save Notes
+        </button>
+        <button
+  onClick={saveToList}
+  className="mt-3 ml-3 bg-green-600 px-4 py-2 rounded"
+>
+  Save to List
+</button>
+      </div>
     </div>
   )
 }

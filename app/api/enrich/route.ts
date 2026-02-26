@@ -1,20 +1,41 @@
-export async function POST(req: Request){
+import { NextResponse } from "next/server"
 
-  const body = await req.json()
+export async function POST(req: Request) {
+  const { url } = await req.json()
 
-  const website = body.website
+  const now = new Date().toISOString()
 
-  return Response.json({
+  return NextResponse.json({
+    summary: `${url} is a fast-growing technology company focused on scalable digital solutions.`,
 
-    summary:
-      website + " is a fast-growing technology startup providing digital solutions.",
+    whatTheyDo: [
+      "Builds scalable web and SaaS products",
+      "Provides API-based developer tools",
+      "Offers cloud-native infrastructure solutions",
+      "Focuses on automation and productivity"
+    ],
 
-    keywords:
-      ["startup","technology","software"],
+    keywords: [
+      "SaaS",
+      "API",
+      "Cloud",
+      "Startup",
+      "Technology",
+      "Automation"
+    ],
 
-    sources:
-      [website]
+    signals: [
+      "Careers page detected",
+      "Recently updated blog",
+      "Hiring for engineering roles",
+      "Strong developer focus"
+    ],
 
+    sources: [
+      {
+        url: url,
+        scrapedAt: now
+      }
+    ]
   })
-
 }
