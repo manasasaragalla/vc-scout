@@ -1,79 +1,63 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import companies from "@/data/companies.json"
 
-export default function CompanyProfile() {
-  const { id } = useParams()
-  const company = companies.find((c) => c.id === Number(id))
+export default function CompanyPage() {
+  const params = useParams()
+  const id = Number(params.id)
 
-  const [notes, setNotes] = useState("")
+  const company = companies.find((c: any) => c.id === id)
 
-  useEffect(() => {
-    if (id) {
-      const saved = localStorage.getItem(`notes-${id}`)
-      if (saved) {
-        setNotes(saved)
-      }
-    }
-  }, [id])
-
-  const saveNotes = () => {
-    localStorage.setItem(`notes-${id}`, notes)
-    alert("Notes saved")
-  }
-
-  const saveToList = () => {
-  const existing = JSON.parse(localStorage.getItem("saved-companies") || "[]")
-
-  const alreadySaved = existing.find(
-    (item: any) => item.id === company.id
-  )
-
-  if (alreadySaved) {
-    alert("Already saved to list")
-    return
-  }
-
-  const updated = [...existing, company]
-
-  localStorage.setItem("saved-companies", JSON.stringify(updated))
-
-  alert("Company saved to list")
-}
+  // 🔒 TypeScript safe check (THIS FIXES YOUR BUILD ERROR)
   if (!company) {
-    return <div className="text-white">Company not found</div>
+    return (
+      <div className="min-h-screen bg-black text-white p-10">
+        Company not found
+      </div>
+    )
+  }
+
+  const [summary, setSummary] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function enrichCompany() {
+    setLoading(true)
+
+    const res = await fetch("/api/enrich", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        website: company.website,
+      }),
+    })
+
+    const data = await res.json()
+    setSummary(data.summary)
+    setLoading(false)
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">{company.name}</h1>
-      <p className="text-gray-400">{company.description}</p>
+    <div className="min-h-screen bg-black text-white p-10">
+      <h1 className="text-4xl font-bold mb-2">{company.name}</h1>
+      <p className="text-gray-400 mb-6">{company.description}</p>
 
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Notes</h2>
+      <button
+        onClick={enrichCompany}
+        className="bg-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+      >
+        {loading ? "Enriching..." : "Enrich Company"}
+      </button>
 
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Write notes about this company..."
-          className="w-full p-3 bg-zinc-800 rounded min-h-[120px]"
-        />
-
-        <button
-          onClick={saveNotes}
-          className="mt-3 bg-blue-600 px-4 py-2 rounded"
-        >
-          Save Notes
-        </button>
-        <button
-  onClick={saveToList}
-  className="mt-3 ml-3 bg-green-600 px-4 py-2 rounded"
->
-  Save to List
-</button>
-      </div>
+      {summary && (
+        <div className="mt-8 bg-zinc-900 p-6 rounded-lg">
+          <h2 className="text-xl font-semibold mb-2">AI Summary</h2>
+          <p>{summary}</p>
+        </div>
+      )}
     </div>
   )
 }
