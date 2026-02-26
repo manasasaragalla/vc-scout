@@ -4,19 +4,27 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import companies from "@/data/companies.json";
 
+type Company = {
+  id: number;
+  name: string;
+  description: string;
+  website: string;
+};
+
 export default function CompanyPage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const company =
-    companies.find((c: any) => c.id === id) || null;
+  const found = companies.find((c: any) => c.id === id);
 
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  if (!company) {
+  if (!found) {
     return <div style={{ padding: 40 }}>Company not found</div>;
   }
+
+  const company: Company = found; // 🔥 force proper typing
 
   async function enrichCompany() {
     setLoading(true);
@@ -27,7 +35,7 @@ export default function CompanyPage() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        website: company.website,
+        website: company.website, // now 100% safe
       }),
     });
 
