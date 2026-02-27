@@ -1,11 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import companies from "@/data/companies.json";
 
 export default function Home() {
   const [search, setSearch] = useState("");
+  const [savedSearches, setSavedSearches] = useState<string[]>([]);
+
+  // Load saved searches from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("savedSearches");
+    if (stored) {
+      setSavedSearches(JSON.parse(stored));
+    }
+  }, []);
+
+  // Save search
+  const saveSearch = () => {
+    if (!search.trim()) return;
+
+    if (!savedSearches.includes(search)) {
+      const updated = [...savedSearches, search];
+      setSavedSearches(updated);
+      localStorage.setItem("savedSearches", JSON.stringify(updated));
+    }
+  };
 
   const filteredCompanies = companies.filter((company: any) =>
     company.name.toLowerCase().includes(search.toLowerCase())
@@ -25,11 +45,37 @@ export default function Home() {
           padding: 10,
           width: "100%",
           maxWidth: 400,
-          marginBottom: 30,
+          marginBottom: 10,
           border: "1px solid #ccc",
           borderRadius: 6,
         }}
       />
+
+      <button onClick={saveSearch} style={{ marginBottom: 20 }}>
+        Save Search
+      </button>
+
+      {/* 📌 Saved Searches */}
+      {savedSearches.length > 0 && (
+        <div style={{ marginBottom: 30 }}>
+          <h3>Saved Searches:</h3>
+          {savedSearches.map((term, index) => (
+            <button
+              key={index}
+              onClick={() => setSearch(term)}
+              style={{
+                marginRight: 10,
+                marginTop: 5,
+                padding: "5px 10px",
+                borderRadius: 6,
+                border: "1px solid #888",
+              }}
+            >
+              {term}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Company List */}
       {filteredCompanies.map((company: any) => (
